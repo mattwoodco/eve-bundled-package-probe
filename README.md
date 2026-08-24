@@ -73,10 +73,12 @@ End-to-end evidence from an Eve agent deployed with `vercel.json` `{ "bunVersion
 
 On the failing deploy, cold-starting `GET /eve/v1/health` crashes during `workflow-runtime` module init when `resolveInstalledPackageInfo()` probes `require.resolve("eve/package.json")`. Bun 1.4's default package auto-install attempts `mkdir node_modules/.cache` under the read-only function root → `bun is unable to write files: ReadOnlyFileSystem` (not a catchable JS error). Next.js routes on the same deployment survived because they never invoke that probe.
 
-| Deploy | Eve `/eve/v1/health` | Error |
-|--------|----------------------|-------|
-| [`dpl_GvJAuXqraWu5BCzGck6FDT6sVFyw`](https://eve-bun-spike-12t6s8l39-redstone-labs-ai.vercel.app) | **FAIL** | `FUNCTION_INVOCATION_FAILED`, logs: `bun is unable to write files: ReadOnlyFileSystem` |
-| [`dpl_HCbRYc251W6hrsJ8gvxgLyaXJ1ZH`](https://vercel.com/redstone-labs-ai/eve-bun-spike/HCbRYc251W6hrsJ8gvxgLyaXJ1ZH) (workaround: disable Bun auto-install in `.func`) | **PASS** | session → stream → tool → workflow → AI Gateway all succeeded |
+> Vercel validation was on a team-protected project; dashboard and deployment URLs are not publicly verifiable.
+
+| Deploy | Eve `/eve/v1/health` | Error / outcome |
+|--------|----------------------|-----------------|
+| `dpl_GvJAuXqraWu5BCzGck6FDT6sVFyw` | **FAIL** | `FUNCTION_INVOCATION_FAILED`, logs: `bun is unable to write files: ReadOnlyFileSystem` |
+| `dpl_HCbRYc251W6hrsJ8gvxgLyaXJ1ZH` (workaround: disable Bun auto-install in `.func`) | **PASS** | health 200, session 202, stream, tool, workflow, AI Gateway |
 
 After suppressing Bun auto-install in the generated Eve `.func` (`bunfig.toml` `[install] auto = "disable"`), the **same bundled artifact** worked through session, streaming, authored tools, workflow orchestration, and AI Gateway — confirming the crash is the package probe / auto-install path, not Eve application logic or workflow world storage.
 
