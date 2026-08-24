@@ -10,7 +10,9 @@
     "build": "eve build",
     "dev": "eve dev",
     "start": "eve start",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "repro:architectural": "node repro/architectural.mjs",
+    "repro:raw-resolve": "node repro/raw-resolve-probe.mjs"
   },
   "dependencies": {
     "@vercel/connect": "0.4.3",
