@@ -67,13 +67,11 @@ node repro/raw-resolve-probe.mjs --read-only
 
 ---
 
-## B. Vercel proof (validated on companion spike)
+## B. Vercel proof (validated on Vercel Bun 1.4)
 
-Full end-to-end Vercel Bun deployment evidence lives in the companion spike repo README:
+End-to-end evidence from an Eve agent deployed with `vercel.json` `{ "bunVersion": "1.4.x" }` and Nitro `bun1.x` runtime (no architectural repro scripts required):
 
-**[redstone-labs-ai/eve-bun-spike](https://github.com/redstone-labs-ai/eve-bun-spike)** (see “Vercel Bun 1.4 deploy” and “What crashed on the prior deploy”)
-
-Summary:
+On the failing deploy, cold-starting `GET /eve/v1/health` crashes during `workflow-runtime` module init when `resolveInstalledPackageInfo()` probes `require.resolve("eve/package.json")`. Bun 1.4's default package auto-install attempts `mkdir node_modules/.cache` under the read-only function root → `bun is unable to write files: ReadOnlyFileSystem` (not a catchable JS error). Next.js routes on the same deployment survived because they never invoke that probe.
 
 | Deploy | Eve `/eve/v1/health` | Error |
 |--------|----------------------|-------|
